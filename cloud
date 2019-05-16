@@ -34,7 +34,7 @@ fi
 print "Copying . to $CLOUD_HOST $TARGET"
 rsync -az --info=progress2 --delete .        \
     --rsync-path "mkdir -p $TARGET && rsync" \
-    -e "ssh -l '$CLOUD_USER'" "$CLOUD_HOST:$TARGET"      \
+    -e "ssh -l '$CLOUD_USER'" "$CLOUD_HOST:$TARGET"
 
 print "Running '$CMD' on $CLOUD_HOST"
 ssh -t "$CLOUD_USER@$CLOUD_HOST" \

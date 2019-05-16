@@ -37,6 +37,9 @@ rsync -az --info=progress2 --delete .        \
     -e "ssh -l '$CLOUD_USER'" "$CLOUD_HOST:$TARGET"
 
 print "Running '$CMD' on $CLOUD_HOST"
+
+# we want to copy the files back even if ssh returns non zero
+set +e
 ssh -t "$CLOUD_USER@$CLOUD_HOST" \
        "source ~/.profile       ;\
        cd $TARGET               ;\

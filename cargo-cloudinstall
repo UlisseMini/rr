@@ -2,9 +2,18 @@
 # script to install a binary using cargo but
 # building it remotely.
 set -e
+
+# when running with cargo quickinstall ... cargo
+# passes quickinstall as the first paramater,
+# thus we need to ignoere it here.
+cmd="$@"
+if [ "$1" = "cloudinstall" ]; then
+    cmd=${@:2}
+fi
+
 tmpdir="$(mktemp -d)"
 cd "$tmpdir"
-cloud "cargo install $@ --root ."
+cloud "cargo install $cmd --root ."
 echo --------------------------------------------------------------------------
 cp -v ./bin/* ~/.cargo/bin
 rm -rf "$tmpdir"

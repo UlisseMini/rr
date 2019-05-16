@@ -1,0 +1,10 @@
+#!/bin/sh
+# script to install a binary using cargo but
+# building it remotely.
+set -e
+tmpdir="$(mktemp -d)"
+cd "$tmpdir"
+cloud "cargo install $@ --root ."
+echo --------------------------------------------------------------------------
+cp -v ./bin/* ~/.cargo/bin
+rm -rf "$tmpdir"

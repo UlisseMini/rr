@@ -1,2 +1,2 @@
 # cloud
-A script made for running cpu intensive tasks remotely.
+A collection of scripts made for running cpu intensive tasks remotely.

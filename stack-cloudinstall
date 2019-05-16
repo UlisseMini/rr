@@ -1,0 +1,11 @@
+#!/bin/sh
+# script to install a binary using stack but
+# building it remotely.
+set -e
+
+tmpdir="$(mktemp -d)"
+cd "$tmpdir"
+cloud "stack install $@ --local-bin-path ."
+echo --------------------------------------------------------------------------
+cp -v * ~/.local/bin
+rm -rf "$tmpdir"

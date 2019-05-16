@@ -1,0 +1,47 @@
+#!/bin/sh
+# cloud, written by Ulisse Mini (github.com/UlisseMini)
+# to setup first set the following enviorment variables
+# CLOUD_HOST => remote host to connect to
+# CLOUD_USER => remote user to login as
+# you can also specify them in this file if you want.
+# CLOUD_HOST=blag.com
+# CLOUD_USER=blah
+set -e
+
+# print text inside a box.
+# https://unix.stackexchange.com/questions/70615/bash-script-echo-output-in-box
+function print() {
+  local s="$*"
+  tput setaf 3
+  echo " -${s//?/-}-
+| ${s//?/ } |
+| $(tput setaf 4)$s$(tput setaf 3) |
+| ${s//?/ } |
+ -${s//?/-}-"
+  tput sgr 0
+}
+
+# directory to cwd files into on the remote host
+TARGET="~/.builds/${PWD##*/}"
+if [ "$*" ]; then
+    # run the command given on the remote host
+    CMD="$*"
+else
+    # they specified no command, give them a login shell
+    CMD="\$(getent passwd $CLOUD_USER | cut -d: -f7)"
+fi
+
+print "Copying . to $CLOUD_HOST $TARGET"
+rsync -az --info=progress2 --delete .        \
+    --rsync-path "mkdir -p $TARGET && rsync" \
+    -e "ssh -l '$CLOUD_USER'" "$CLOUD_HOST:$TARGET"      \
+
+print "Running '$CMD' on $CLOUD_HOST"
+ssh -t "$CLOUD_USER@$CLOUD_HOST" \
+       "source ~/.profile       ;\
+       cd $TARGET               ;\
+       $CMD"
+
+print "Copying files back from $CLOUD_HOST $TARGET"
+rsync -az --info=progress2 --delete -e \
+    "ssh -l '$CLOUD_USER'" "$CLOUD_HOST:$TARGET" ..

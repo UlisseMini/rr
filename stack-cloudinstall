@@ -3,9 +3,22 @@
 # building it remotely.
 set -e
 
-tmpdir="$(mktemp -d)"
-cd "$tmpdir"
-cloud "stack install $@ --local-bin-path ."
-echo --------------------------------------------------------------------------
-cp -v * ~/.local/bin
-rm -rf "$tmpdir"
+TARGET="/home/$CLOUD_USER/.builds/${PWD##*/}"
+
+echo "Transfering source files to $CLOUD_HOST:$TARGET..."
+
+rsync -az --info=progress2 --exclude ".*" .      \
+    --rsync-path "mkdir -p \"$TARGET\" && rsync" \
+    -e "ssh -l '$CLOUD_USER'" "$CLOUD_HOST:$TARGET"
+
+# Now we build.
+echo "Running 'stack install $*'"
+ssh -t "$CLOUD_USER@$CLOUD_HOST" \
+       "cd \"$TARGET\"          && \
+       mkdir -p bin             && \
+       stack install --local-bin-path ./bin $*"
+
+rsync -a --info=progress2                                 \
+	--rsync-path "cd \"$TARGET\" && rsync"                \
+	-e "ssh -l '$CLOUD_USER'" "$CLOUD_HOST:$TARGET/bin/*" \
+	~/.local/bin

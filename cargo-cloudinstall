@@ -3,8 +3,8 @@
 # building it remotely.
 set -e
 
-# when running with cargo quickinstall ... cargo
-# passes quickinstall as the first paramater,
+# when running with cargo cloudinstall ... cargo
+# passes cloudinstall as the first paramater,
 # thus we need to ignoere it here.
 cmd="$@"
 if [ "$1" = "cloudinstall" ]; then

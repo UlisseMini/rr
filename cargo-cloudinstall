@@ -11,9 +11,11 @@ if [ "$1" = "cloudinstall" ]; then
     cmd=${@:2}
 fi
 
-tmpdir="$(mktemp -d)"
-cd "$tmpdir"
-cloud "cargo install $cmd --root ."
-echo --------------------------------------------------------------------------
-cp -v ./bin/* ~/.cargo/bin
-rm -rf "$tmpdir"
+ssh -t "$CLOUD_USER@$CLOUD_HOST"        \
+       "source ~/.profile              ;\
+			 dir=\$(mktemp -d)               ;\
+			 trap \"rm -rf \$dir\"           ;\
+       cargo install $cmd --root \$dir"
+
+rsync -vz --info=progress2 -e \
+    "ssh -l '$CLOUD_USER'" "$CLOUD_HOST:$TARGET" ~/.cargo/bin

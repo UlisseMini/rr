@@ -3,6 +3,11 @@
 # building it remotely.
 set -e
 
+if [ -z "$CLOUD_USER" ] || [ -z "$CLOUD_USER" ]; then
+	echo "You must provide \$CLOUD_HOST and \$CLOUD_USER" 2>&1
+	exit 1
+fi
+
 TARGET="/home/$CLOUD_USER/.builds/${PWD##*/}"
 
 echo "Transfering source files to $CLOUD_HOST:$TARGET..."

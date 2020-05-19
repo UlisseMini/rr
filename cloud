@@ -21,6 +21,11 @@ function print() {
   tput sgr 0
 }
 
+if [ -z "$CLOUD_USER" ] || [ -z "$CLOUD_USER" ]; then
+	print "You must provide \$CLOUD_HOST and \$CLOUD_USER" 2>&1
+	exit 1
+fi
+
 # directory to cwd files into on the remote host
 TARGET="~/.builds/${PWD##*/}"
 if [ "$*" ]; then
